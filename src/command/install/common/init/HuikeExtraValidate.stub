@@ -1,0 +1,45 @@
+<?php
+
+
+namespace huike\common\init;
+
+
+use think\Validate;
+
+class HuikeExtraValidate
+{
+    public function handle()
+    {
+        // 正整数校验
+        Validate::maker(function($validate) {
+            $validate->extend('idInteger', function ($value, $rule, $data,$fieldName,$fieldTitle){
+                $title = empty($fieldTitle) ? $fieldName : $fieldTitle;
+                if(boolval(preg_match('/^[1-9]\d*$/',$value)) === false){
+                    return $title.'参数必须是正整数';
+                }
+                return true;
+            });
+        });
+        // 经度校验
+        Validate::maker(function($validate) {
+            $validate->extend('lng', function ($value, $rule, $data,$fieldName,$fieldTitle){
+                $title = empty($fieldTitle) ? $fieldName : $fieldTitle;
+                if(preg_match('/^[\-\+]?(0(\.\d{1,10})?|([1-9](\d)?)(\.\d{1,10})?|1[0-7]\d{1}(\.\d{1,10})?|180\.0{1,10})$/',$value) === false){
+                    return $title.'参数必须是正确的经度度数值';
+                }
+                return true;
+            });
+        });
+
+        // 纬度校验
+        Validate::maker(function($validate) {
+            $validate->extend('lat', function ($value, $rule, $data,$fieldName,$fieldTitle){
+                $title = empty($fieldTitle) ? $fieldName : $fieldTitle;
+                if(preg_match('/^[\-\+]?((0|([1-8]\d?))(\.\d{1,10})?|90(\.0{1,10})?)$/',$value) === false){
+                    return $fieldName.'参数必须是正确的纬度数值';
+                }
+                return true;
+            });
+        });
+    }
+}

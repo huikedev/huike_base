@@ -1,0 +1,32 @@
+<?php
+
+
+namespace huike\common\init;
+
+use huikedev\huike_base\contract\InitAbstract;
+use huikedev\huike_base\facade\FileSystem;
+
+/**
+ * Desc
+ * Class HuikeConsole
+ * Full \huikedev\huike_base\init\HuikeConsole
+ * @package huikedev\huike_base\init
+ */
+class HuikeConsole extends InitAbstract
+{
+    public function getCommands(): array
+    {
+        $commands = [];
+        $productionCommandPath = $this->huikePath.DIRECTORY_SEPARATOR.'command';
+        if(is_dir($productionCommandPath)){
+            $commandFiles = FileSystem::allFiles($productionCommandPath);
+            foreach ($commandFiles as $command) {
+                if ($command->getExtension() === 'php') {
+                    $temp = str_replace($this->app->getRootPath(), '', $command);
+                    $middlewares[] = rtrim(str_replace(DIRECTORY_SEPARATOR, '\\', $temp), '.php');
+                }
+            }
+        }
+        return $commands;
+    }
+}

@@ -1,0 +1,53 @@
+<?php
+
+
+namespace huike\common\init;
+
+use think\facade\Config;
+use think\Paginator;
+
+/**
+ * Desc
+ * Class HuikePaginator
+ * Full \huikedev\huike_base\init\HuikePaginator
+ * @package huikedev\huike_base\init
+ */
+class HuikePaginator extends Paginator
+{
+    protected $paginatorConfig;
+    public function __construct($items, int $listRows, int $currentPage = 1, int $total = null, bool $simple = false, array $options = [])
+    {
+        $this->paginatorConfig = Config::get('huike.paginator');
+        $options['var_page'] = $this->paginatorConfig['var_page'] ?? 'current';
+        parent::__construct($items, $listRows, $currentPage, $total, $simple, $options);
+    }
+
+    public function render()
+    {
+
+    }
+    /**
+     * 重写Paginator的toArray方法
+     * @return array
+     */
+    public function toArray(): array
+    {
+        try {
+            $total = $this->total();
+        } catch (\DomainException $e) {
+            $total = null;
+        }
+        $totalKey = $this->paginatorConfig['var_total'] ?? 'total';
+        $pageSizeKey = $this->paginatorConfig['var_pageSize'] ?? 'pageSize';
+        $currentKey = $this->paginatorConfig['var_current'] ?? 'current';
+        $lastKey = $this->paginatorConfig['var_last'] ?? 'last';
+        $dataKey = $this->paginatorConfig['var_data'] ?? 'list';
+        return [
+            $totalKey        => $total,
+            $pageSizeKey     => $this->listRows(),
+            $currentKey => $this->currentPage(),
+            $lastKey    => $this->lastPage,
+            $dataKey         => $this->items->toArray(),
+        ];
+    }
+}

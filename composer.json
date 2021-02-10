@@ -1,0 +1,31 @@
+{
+    "name": "huikedev/huike_base",
+    "description": "base lib for huikedev",
+    "type": "think-extend",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "liuqiandev",
+            "email": "310227477@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "psr-4": {
+        "huikedev\\huike_base\\": "src"
+    },
+    "require": {
+        "firebase/php-jwt": "^5.2",
+        "symfony/finder": "^5.2",
+        "topthink/framework": "^6.0.0"
+    },
+    "extra": {
+        "think":{
+            "services":[
+                "huikedev\\huike_base\\HuikeService"
+            ],
+            "config":{
+                "huike": "src/config/huike.php"
+            }
+        }
+    }
+}
