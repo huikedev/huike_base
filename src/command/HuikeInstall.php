@@ -28,9 +28,10 @@ class HuikeInstall extends BaseCommand
 |__|  |__|  \______/  |__| |__|\__\ |_______(__)_______/ |_______|   \__/     
                                                                               
 当前版本：%s
+项目作者：%s
 文档地址：https://huike.dev
 EOT
-,HuikeConfig::VERSION));
+,HuikeConfig::VERSION,HuikeConfig::AUTHOR));
     }
 
     // 复制全部文件
@@ -72,9 +73,9 @@ EOT
     protected function makeEmptyDirs()
     {
         $this->makeEmptyDir('command');
-        $this->makeEmptyDir('logic'.DIRECTORY_SEPARATOR.'controller');
-        $this->makeEmptyDir('logic'.DIRECTORY_SEPARATOR.'validate');
-        $this->makeEmptyDir('service');
+        $this->makeEmptyDir('demo'.DIRECTORY_SEPARATOR.'logic'.DIRECTORY_SEPARATOR.'controller');
+        $this->makeEmptyDir('demo'.DIRECTORY_SEPARATOR.'validate');
+        $this->makeEmptyDir('demo'.DIRECTORY_SEPARATOR.'service');
     }
 
     protected function makeEmptyDir(string $name)
@@ -95,6 +96,11 @@ EOT
         $configContent .="\t'admin_token_key'=>'".$adminKey."',\n";
         $configContent .="\t // token秘钥，用于token加密\n";
         $configContent .="\t'token_secret'=>'".$tokenSecret."',\n";
+        $configContent .="\t // 线上环境开启调试模式\n";
+        $configContent .="\t 'online_debug'=>[\n";
+        $configContent .="\t\t 'key'=>'".Str::random(5)."',\n";
+        $configContent .="\t\t 'value'=>'".Str::random(10)."',\n";
+        $configContent .="\t ],\n";
         $configContent .="];";
         file_put_contents(app()->getConfigPath().'huike.php',$configContent);
     }

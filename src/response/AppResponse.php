@@ -16,29 +16,32 @@ use think\exception\ValidateException;
 use think\facade\Config;
 use think\helper\Str;
 
-/**
- * Desc
- * Class AppResponse
- * Full \huikedev\huike_base\response\AppResponse
- * @package huikedev\huike_base\response
- */
 class AppResponse
 {
     protected $defaultControllerPath = 'controller';
     protected $defaultValidatePath = 'validate';
-    protected $namespace = 'huike\logic';
+    protected $logicNamespacePrefix;
+    protected $validateNamespacePrefix;
     protected $dispatch;
-    public function setNamespace(string $namespace=null): AppResponse
+    public function setLogicNamespacePrefix(?string $logicNamespacePrefix): AppResponse
     {
-        if(is_null($namespace)===false){
-            $this->namespace = $namespace;
+        if(empty($logicNamespacePrefix)===false){
+            $this->logicNamespacePrefix = $logicNamespacePrefix;
         }
         return $this;
     }
 
-    public function setLogicController(string $path=null): AppResponse
+    public function setValidateNamespacePrefix(string $validateNamespacePrefix): AppResponse
     {
-        if(is_null($path)===false){
+        if(empty($validateNamespacePrefix)===false){
+            $this->validateNamespacePrefix = $validateNamespacePrefix;
+        }
+        return $this;
+    }
+
+    public function setLogicControllerPath(string $path): AppResponse
+    {
+        if(empty($path)===false){
             $this->defaultControllerPath = $path;
         }
         return $this;
@@ -46,16 +49,18 @@ class AppResponse
 
     public function setDispatch(string $dispatchClass): AppResponse
     {
-        $this->dispatch = $dispatchClass;
+        if(empty($dispatchClass)===false){
+            $this->dispatch = $dispatchClass;
+        }
         return $this;
     }
     /*
      * 自动验证
      */
-    public function validate($validate=null)
+    public function validate(?string $validate=null,?string $scene = null): AppResponse
     {
         if(is_null($validate)){
-            $validate = AppRequest::getSnakePathFromController($this->namespace.'\\'.$this->defaultValidatePath.'\\').'\\'.Str::studly(AppRequest::action());
+            $validate = $this->getValidateClass();
         }
         if(class_exists($validate)===false){
             throw new CoreException('validate not found',$validate.' 未找到');
@@ -65,14 +70,52 @@ class AppResponse
             throw new CoreException('validate extends error',$validate.' 必须继承huikedev\huike_base\base\BaseValidate');
         }
         try {
+            if(is_null($scene)===false){
+                $validateClass->scene($scene);
+            }
             $validateClass->check(AppRequest::param());
         }catch (ValidateException $e){
             throw new AppValidateException($validateClass->getExceptionKey(),$e->getMessage());
         }
+        return $this;
     }
 
     public function render()
     {
+        if(AppRequest::isDebug()){
+            return $this->debugRender();
+        }
+        return $this->productionRender();
+    }
+
+    /**
+     * @desc 生成环境下响应
+     * @return mixed
+     * @throws ResponseException
+     */
+    protected function productionRender()
+    {
+        try {
+            $logicClass = $this->getLogicClass();
+            $action          = AppRequest::action();
+            $logic           = app($logicClass)->$action();
+            $returnTypeDispatch = is_null($this->dispatch) ? 'huikedev\huike_base\response\dispatch\\'.Str::studly(strtolower($logic->getReturnType())) : $this->dispatch;
+        }catch (\Throwable $e){
+            throw new ResponseException($e->getMessage(),4);
+        }
+
+        return app($returnTypeDispatch,[$logic],true)->render();
+    }
+
+    /**
+     * @desc Debug模式下响应
+     * @return mixed
+     * @throws ResponseException
+     */
+    protected function debugRender()
+    {
+        $logicClass = $this->getLogicClass();
+        halt($logicClass);
         try{
             $logicClass = $this->getLogicClass();
             $action          = AppRequest::action();
@@ -87,7 +130,7 @@ class AppResponse
 
         $logic           = app($logicClass)->$action();
         //是否继承BaseLogic
-        if(Config::get('huike.base_logic_check',true) && $logic instanceof BaseLogic === false){
+        if(Config::get('huike.base_logic_check',true) &&$logic instanceof BaseLogic === false){
             throw new ResponseException($logicClass . '必须返回'.BaseLogic::class.'实例',3);
         }
 
@@ -95,10 +138,43 @@ class AppResponse
         return app($returnTypeDispatch,[$logic],true)->render();
     }
 
-    protected function getLogicClass(): string
+    protected function getControllerInfo(): string
     {
         $appController = AppRequest::controller();
         $appController = str_replace('.','\\',$appController);
-        return UtilsTools::replaceNamespace($this->namespace.'\\'.$this->defaultControllerPath.'\\'.$appController);
+        return str_replace(AppRequest::module(),'',$appController);
     }
+
+    protected function getLogicClass():string
+    {
+        if(is_null($this->logicNamespacePrefix) === false){
+            $class = $this->logicNamespacePrefix;
+        }else{
+            $class = AppRequest::namespace();
+            if(AppRequest::namespace()==='huike'){
+                $class.='\\'.AppRequest::module();
+            }
+            $class .= '\logic\\'.$this->defaultControllerPath.'\\';
+        }
+        $class .= $this->getControllerInfo();
+        return UtilsTools::replaceNamespace($class);
+    }
+
+    protected function getValidateClass():string
+    {
+        if(is_null($this->validateNamespacePrefix) === false){
+            $class = $this->validateNamespacePrefix;
+        }else{
+            $class = AppRequest::namespace();
+            if(AppRequest::namespace()==='huike'){
+                $class.='\\'.AppRequest::module();
+            }
+            $class .= '\\'.$this->defaultValidatePath;
+        }
+
+        $namespaceInfo = pathinfo($this->getControllerInfo());
+        $class .='\\'.$namespaceInfo['dirname'].'\\'.Str::snake($namespaceInfo['filename']).'\\'.Str::studly(AppRequest::action());
+        return UtilsTools::replaceNamespace($class);
+    }
+
 }

@@ -117,9 +117,7 @@ use think\route\Rule;
  * @method static mixed getLongIp() 获取客户端ip2long的值
  * @method static mixed getOs() 获取客户端系统名称
  * @method static mixed getBrowser() 获取浏览器名称
- * @method static string getSnakePathFromController($namespacePrefix='app\controller\\') 获取控制器的完整命名空间
  * @method static bool isDebug() 是否为调试模式
- * @method static string getClient()
  * @method static string getFullActionName()
  * @method static bool safeBoolean(string $name)
  * @method static int safeInteger(string $name)
@@ -131,6 +129,8 @@ use think\route\Rule;
  * @method static int id(int $default = 0)
  * @method static string module()
  * @method static void setModule(string $module)
+ * @method static string namespace()
+ * @method static void setNamespace(string $namespace)
  * @method static \huikedev\huike_base\request\AppRequest setId(int $id)
  */
 class AppRequest extends Facade
