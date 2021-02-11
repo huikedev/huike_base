@@ -1,0 +1,13 @@
+<?php
+
+
+namespace huike\common\exception;
+
+
+class ExceptionConst
+{
+    // 默认异常提示类型
+    const NOTICE_TYPE = 4;
+    // 验证错误的错误码
+    const VALIDATE_ERROR = 99;
+}

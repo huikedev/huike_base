@@ -1,0 +1,8 @@
+<?php
+return [
+    'ok'                          => ['code' => 1, 'msg' => 'ok'],
+    //系统级错误
+
+    // 默认模块验证类错误，可删除
+    'huike_module index exception'=>['code' => -2000, 'msg' => '系统错误，请稍候再试'],
+];

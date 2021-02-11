@@ -1,0 +1,18 @@
+<?php
+
+
+namespace huike\huike_module\service\index\provider;
+
+
+use huikedev\huike_base\app_const\HuikeConfig;
+
+class Index
+{
+    public function handle()
+    {
+        $data['version'] = HuikeConfig::VERSION;
+        $data['author'] = HuikeConfig::AUTHOR;
+        $data['doc_site'] = HuikeConfig::DOC_SITE;
+        return $data;
+    }
+}

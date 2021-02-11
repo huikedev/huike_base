@@ -1,0 +1,16 @@
+<?php
+
+
+namespace huike\huike_module\service\index\provider;
+
+
+use huikedev\huike_base\facade\AppRequest;
+
+class Validate
+{
+    public function handle(): array
+    {
+        $data['test'] = AppRequest::param('test');
+        return $data;
+    }
+}

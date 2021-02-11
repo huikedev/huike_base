@@ -1,0 +1,27 @@
+<?php
+
+
+namespace huike\huike_module\service\index;
+
+
+use huike\huike_module\service\index\provider\Html;
+use huike\huike_module\service\index\provider\Index;
+use huike\huike_module\service\index\provider\Validate;
+
+class IndexService
+{
+    public function index()
+    {
+        return app(Index::class,[],true)->handle();
+    }
+
+    public function validate()
+    {
+        return app(Validate::class,[],true)->handle();
+    }
+
+    public function html()
+    {
+        return app(Html::class,[],true)->handle();
+    }
+}

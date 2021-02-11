@@ -6,6 +6,7 @@ namespace huikedev\huike_base\response;
 
 use huikedev\huike_base\base\BaseLogic;
 use huikedev\huike_base\facade\AppDebug;
+use huikedev\huike_base\facade\AppRequest;
 
 /**
  * Desc
@@ -26,7 +27,7 @@ abstract class ResponseDispatch
 
     protected function getDebugInfo()
     {
-        if(app()->isDebug()===false){
+        if(AppRequest::isDebug()===false){
             return $this;
         }
         AppDebug::remark('huike_end');

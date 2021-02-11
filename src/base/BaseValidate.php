@@ -15,6 +15,15 @@ use think\Validate;
 abstract class BaseValidate extends Validate
 {
     protected $exceptionKey;
+
+    public function __construct()
+    {
+        $this->setExceptionKey();
+        parent::__construct();
+    }
+
+    abstract protected function setExceptionKey();
+
     public function getExceptionKey()
     {
         if(is_null($this->exceptionKey)){

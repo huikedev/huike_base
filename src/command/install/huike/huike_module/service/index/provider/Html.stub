@@ -1,0 +1,13 @@
+<?php
+
+
+namespace huike\huike_module\service\index\provider;
+
+
+class Html
+{
+    public function handle(): string
+    {
+        return '欢迎使用huikedev!';
+    }
+}

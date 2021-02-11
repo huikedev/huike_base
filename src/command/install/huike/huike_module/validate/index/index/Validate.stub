@@ -1,0 +1,22 @@
+<?php
+
+
+namespace huike\huike_module\validate\index\index;
+
+
+use huikedev\huike_base\base\BaseValidate;
+
+class Validate extends BaseValidate
+{
+    protected function setExceptionKey()
+    {
+        $this->exceptionKey = 'huike_module index exception';
+    }
+
+    protected $rule =[
+        'test'  =>  'require'
+    ];
+    protected $message =[
+        'test.require'  =>  '请携带【test】参数'
+    ];
+}

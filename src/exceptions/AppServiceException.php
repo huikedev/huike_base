@@ -3,6 +3,8 @@
 
 namespace huikedev\huike_base\exceptions;
 
+use huike\common\exception\ExceptionConst;
+
 /**
  * Desc
  * Class AppServiceException
@@ -12,7 +14,7 @@ namespace huikedev\huike_base\exceptions;
 abstract class AppServiceException extends HuikeException
 {
     protected $exceptionKey;
-    public function __construct(string $appMsg, int $code, int $noticeType = 1,\Throwable $previous = null, string $error = null, int $errorLevel = 0,array $appData = [] )
+    public function __construct(string $appMsg, int $code, int $noticeType = ExceptionConst::NOTICE_TYPE,\Throwable $previous = null, string $error = null, int $errorLevel = 0,array $appData = [] )
     {
         $this->setExceptionKey();
         parent::__construct($this->exceptionKey, $appMsg,$code,$noticeType,$previous,$error,$errorLevel,$appData);

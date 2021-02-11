@@ -1,0 +1,25 @@
+<?php
+
+
+namespace app\controller\huike_module\index;
+
+
+use huikedev\huike_base\response\AppResponse;
+
+class Index
+{
+    public function index()
+    {
+        return (new AppResponse())->render();
+    }
+
+    public function validate()
+    {
+        return (new AppResponse())->validate()->render();
+    }
+
+    public function html()
+    {
+        return (new AppResponse())->render();
+    }
+}

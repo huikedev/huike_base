@@ -66,7 +66,7 @@ class AppResponse
             throw new CoreException('validate not found',$validate.' 未找到');
         }
         $validateClass = validate($validate);
-        if($validateClass instanceof BaseValidate){
+        if($validateClass instanceof BaseValidate===false){
             throw new CoreException('validate extends error',$validate.' 必须继承huikedev\huike_base\base\BaseValidate');
         }
         try {
@@ -115,7 +115,6 @@ class AppResponse
     protected function debugRender()
     {
         $logicClass = $this->getLogicClass();
-        halt($logicClass);
         try{
             $logicClass = $this->getLogicClass();
             $action          = AppRequest::action();

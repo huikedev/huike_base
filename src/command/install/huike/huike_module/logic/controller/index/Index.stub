@@ -1,0 +1,33 @@
+<?php
+
+
+namespace huike\huike_module\logic\controller\index;
+
+
+use huike\huike_module\service\index\facade\IndexService;
+use huikedev\huike_base\app_const\response\AppResponseType;
+use huikedev\huike_base\base\BaseLogic;
+
+class Index extends BaseLogic
+{
+    public function index()
+    {
+        $this->msg = '欢迎使用huikedev!';
+        $this->data = IndexService::index();
+        return $this;
+    }
+
+    public function validate()
+    {
+        $this->msg = '参数校验通过';
+        $this->data['test'] = IndexService::validate();
+        return $this;
+    }
+
+    public function html()
+    {
+        $this->returnType = AppResponseType::HTML;
+        $this->data = IndexService::html();
+        return $this;
+    }
+}

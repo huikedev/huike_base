@@ -1,0 +1,22 @@
+<?php
+
+
+namespace huike\huike_module\service\index\facade;
+
+
+use think\Facade;
+
+/**
+ * @see \huike\huike_module\service\index\IndexService
+ * @mixin \huike\huike_module\service\index\IndexService
+ * @method array index() static
+ * @method array validate() static
+ * @method string html() static
+ */
+class IndexService extends Facade
+{
+    protected static function getFacadeClass()
+    {
+        return \huike\huike_module\service\index\IndexService::class;
+    }
+}

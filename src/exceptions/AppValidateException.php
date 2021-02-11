@@ -3,6 +3,8 @@
 
 namespace huikedev\huike_base\exceptions;
 
+use huike\common\exception\ExceptionConst;
+
 /**
  * Desc
  * Class AppValidateException
@@ -11,7 +13,7 @@ namespace huikedev\huike_base\exceptions;
  */
 class AppValidateException extends HuikeException
 {
-    public function __construct(string $exceptionKey, string $appMsg = null, int $code = 0, int $noticeType = 2)
+    public function __construct(string $exceptionKey, string $appMsg = null, int $code = ExceptionConst::VALIDATE_ERROR, int $noticeType = ExceptionConst::NOTICE_TYPE)
     {
         parent::__construct($exceptionKey,$appMsg,$code ,$noticeType);
     }

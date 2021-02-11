@@ -1,0 +1,17 @@
+<?php
+
+
+namespace huike\common\middlewares;
+
+
+use huikedev\huike_base\facade\AppRequest;
+
+class HuikeModuleRouteMiddleware
+{
+    public function handle($request, \Closure $next)
+    {
+
+        AppRequest::setModule('huike_module');
+        return $next($request);
+    }
+}

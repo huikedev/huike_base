@@ -14,7 +14,8 @@ class HuikeInstall extends BaseCommand
     {
         try {
             $this->copyFiles();
-            $this->makeEmptyDirs();
+            $this->demoModuleInstall();
+            $this->copyController();
             $this->overwriteConfig();
         }catch (\Exception $e){
             $this->commandOutput->error($e->getMessage());
@@ -37,6 +38,8 @@ EOT
     // 复制全部文件
     protected function copyFiles()
     {
+        // 默认异常常量
+        $this->copyFile('common'.DIRECTORY_SEPARATOR.'exception'.DIRECTORY_SEPARATOR.'ExceptionConst');
         // 异常接管类
         $this->copyFile('common'.DIRECTORY_SEPARATOR.'exception'.DIRECTORY_SEPARATOR.'HuikeExceptionHandle');
         // 自动检测命令行类
@@ -49,14 +52,17 @@ EOT
         $this->copyFile('common'.DIRECTORY_SEPARATOR.'init'.DIRECTORY_SEPARATOR.'HuikeQuery');
         // 全局中间件
         $this->copyFile('common'.DIRECTORY_SEPARATOR.'middlewares'.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'GlobalBeforeMiddleware');
+        // 默认模块中间件
+        $this->copyFile('common'.DIRECTORY_SEPARATOR.'middlewares'.DIRECTORY_SEPARATOR.'HuikeModuleRouteMiddleware');
         // 异常文件
         $this->copyFile('lang'.DIRECTORY_SEPARATOR.'zh-cn'.DIRECTORY_SEPARATOR.'exception');
+        mkdir($this->app->getRootPath().'huike'.DIRECTORY_SEPARATOR.'command',0755,true);
     }
 
     // 获取初始文件
     protected function getStubContent(string $name): string
     {
-        return file_get_contents(__DIR__.DIRECTORY_SEPARATOR.'install'.DIRECTORY_SEPARATOR.$name.'.stub');
+        return file_get_contents(__DIR__.DIRECTORY_SEPARATOR.'install'.DIRECTORY_SEPARATOR.'huike'.DIRECTORY_SEPARATOR.$name.'.stub');
     }
 
     // 复制文件
@@ -70,27 +76,13 @@ EOT
         file_put_contents($file,$this->getStubContent($name));
     }
 
-    protected function makeEmptyDirs()
-    {
-        $this->makeEmptyDir('command');
-        $this->makeEmptyDir('demo'.DIRECTORY_SEPARATOR.'logic'.DIRECTORY_SEPARATOR.'controller');
-        $this->makeEmptyDir('demo'.DIRECTORY_SEPARATOR.'validate');
-        $this->makeEmptyDir('demo'.DIRECTORY_SEPARATOR.'service');
-    }
 
-    protected function makeEmptyDir(string $name)
-    {
-        $dir = app()->getRootPath().'huike'.DIRECTORY_SEPARATOR.$name;
-        if (is_dir($dir) === false){
-            mkdir($dir,0755,true);
-        }
-    }
 
     protected function overwriteConfig()
     {
         $adminKey = Str::random(10);
         $tokenSecret = md5(Str::random(10));
-        $configContent = file_get_contents(__DIR__.DIRECTORY_SEPARATOR.'install'.DIRECTORY_SEPARATOR.'huike.stub');
+        $configContent = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR.'install'.DIRECTORY_SEPARATOR.'huike'.DIRECTORY_SEPARATOR.'huike.stub');
         $configContent .="\n";
         $configContent .="\t // 超级管理token key，可用于线上调试\n";
         $configContent .="\t'admin_token_key'=>'".$adminKey."',\n";
@@ -103,6 +95,29 @@ EOT
         $configContent .="\t ],\n";
         $configContent .="];";
         file_put_contents(app()->getConfigPath().'huike.php',$configContent);
+    }
+
+    protected function demoModuleInstall()
+    {
+        $this->copyFile('huike_module'.DIRECTORY_SEPARATOR.'logic'.DIRECTORY_SEPARATOR.'controller'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'Index');
+        $this->copyFile('huike_module'.DIRECTORY_SEPARATOR.'service'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'facade'.DIRECTORY_SEPARATOR.'IndexService');
+        $this->copyFile('huike_module'.DIRECTORY_SEPARATOR.'service'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'provider'.DIRECTORY_SEPARATOR.'Html');
+        $this->copyFile('huike_module'.DIRECTORY_SEPARATOR.'service'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'provider'.DIRECTORY_SEPARATOR.'Index');
+        $this->copyFile('huike_module'.DIRECTORY_SEPARATOR.'service'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'provider'.DIRECTORY_SEPARATOR.'Validate');
+        $this->copyFile('huike_module'.DIRECTORY_SEPARATOR.'service'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'IndexService');
+        $this->copyFile('huike_module'.DIRECTORY_SEPARATOR.'validate'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'Validate');
+        $this->copyFile('huike_module'.DIRECTORY_SEPARATOR.'route');
+    }
+
+    protected function copyController()
+    {
+        $content = file_get_contents(__DIR__.DIRECTORY_SEPARATOR.'install'.DIRECTORY_SEPARATOR.'controller'.DIRECTORY_SEPARATOR.'huike_module'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'Index.stub');
+        $file = $this->app->getAppPath().'controller'.DIRECTORY_SEPARATOR.'huike_module'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'Index.php';
+        $dir = pathinfo($file,PATHINFO_DIRNAME);
+        if (is_dir($dir) === false){
+            mkdir($dir,0755,true);
+        }
+        file_put_contents($file,$content);
     }
 
 

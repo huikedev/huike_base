@@ -1,0 +1,7 @@
+<?php
+
+Route::group('huike',function (){
+    Route::get('','huike_module.index.Index/index');
+    Route::get('validate','huike_module.index.Index/validate');
+    Route::get('html','huike_module.index.Index/html');
+})->middleware([\huike\common\middlewares\HuikeModuleRouteMiddleware::class]);
