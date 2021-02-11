@@ -5,7 +5,6 @@ namespace huikedev\huike_base\interceptor\auth\contract;
 
 
 use huikedev\huike_base\interceptor\auth\exception\AuthException;
-use think\facade\Config;
 
 abstract class AuthAbstract implements AuthInterface
 {
@@ -17,16 +16,21 @@ abstract class AuthAbstract implements AuthInterface
         $this->setClient();
     }
     abstract protected function setClient();
+
     abstract protected function isAuthNecessary();
+
+    abstract protected function auth();
+
+    abstract public function login(int $userId);
+
+    abstract public function logout(string $token);
+
     public function handle()
     {
         if($this->isAuthNecessary()){
             $this->auth();
         }
     }
-    abstract protected function auth();
-    abstract public function login(int $userId);
-    abstract public function logout(string $token);
 
     public function getToken()
     {

@@ -10,4 +10,5 @@ interface AuthInterface
     public function getToken();
     public function getNullableUserId();
     public function getUserId();
+    public function login(int $userId);
 }
