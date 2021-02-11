@@ -10,8 +10,10 @@
         }
     ],
     "minimum-stability": "dev",
-    "psr-4": {
-        "huikedev\\huike_base\\": "src"
+    "autoload": {
+        "psr-4": {
+            "huikedev\\huike_base\\": "src"
+        }
     },
     "require": {
         "firebase/php-jwt": "^5.2",
