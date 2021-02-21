@@ -156,7 +156,7 @@ class Token
      */
     protected function tokenCache(int $uid,string $token):void
     {
-        $tokens = Cache::store('redis')->get($this->getPrefix().$uid,[]);
+        $tokens = Cache::store(Cache::getDefaultDriver())->get($this->getPrefix().$uid,[]);
         $tokens = is_array($tokens) ? $tokens : [];
         $tokens[] = md5($token);
         //只保留最近的三条记录
