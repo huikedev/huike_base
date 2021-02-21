@@ -5,6 +5,7 @@ namespace huikedev\huike_base;
 
 use huike\common\init\HuikeConsole;
 use huike\common\init\HuikeExtraValidate;
+use huike\common\init\HuikeLoadRoutes;
 use huike\common\init\HuikePaginator;
 use huike\common\init\HuikeQuery;
 use huike\common\middlewares\app\GlobalBeforeMiddleware;
@@ -30,6 +31,7 @@ class HuikeService extends Service
             $this->registerExceptionHandle();
             $this->registerPaginator();
             $this->appendValidateRule();
+            $this->loadRoutes();
         }else{
             $this->commands(HuikeInstall::class);
         }
@@ -49,7 +51,6 @@ class HuikeService extends Service
             $huikeConsole = new HuikeConsole($this->app);
             $this->commands($huikeConsole->getCommands());
         }
-
     }
 
     /**
@@ -85,10 +86,21 @@ class HuikeService extends Service
         }
     }
 
+    protected function loadRoutes()
+    {
+        // debug 模式下自动加载路由
+        if($this->app->isDebug() || $this->app->config->get('huike.autoload_routes',false)) {
+            $routes =  (new HuikeLoadRoutes($this->app))->handle();
+            foreach ($routes as $route){
+                parent::loadRoutesFrom($route);
+            }
+        }
+    }
+
     protected function appendValidateRule()
     {
         if($this->app->config->get('huike.extra_validate',true)) {
-            (new HuikeExtraValidate())->handle();
+           (new HuikeExtraValidate())->handle();
         }
     }
 }

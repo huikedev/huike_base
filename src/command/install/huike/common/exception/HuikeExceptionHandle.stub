@@ -3,15 +3,17 @@
 
 namespace huike\common\exception;
 
+use huikedev\huike_base\app_const\NoticeType;
 use huikedev\huike_base\exceptions\HuikeException;
 use huikedev\huike_base\facade\AppDebug;
 use huikedev\huike_base\facade\AppRequest;
+use huikedev\huike_base\log\HuikeLog;
 use think\Exception;
+use think\exception\ErrorException;
 use think\exception\Handle;
 use think\exception\HttpResponseException;
 use think\exception\RouteNotFoundException;
 use think\facade\Config;
-use think\facade\Log;
 use think\Response;
 use Throwable;
 
@@ -28,29 +30,26 @@ class HuikeExceptionHandle extends Handle
     public function report(Throwable $exception): void
     {
         $this->parseLogData($exception);
-        //parent::report($exception);
     }
 
     public function render($request, \Throwable $e): Response
     {
-        // 其他错误交给系统处理
-//        return parent::render($request, $e);
+        if($e instanceof ErrorException){
+            return $this->toErrorExceptionJson($e);
+        }
         if($e instanceof HttpResponseException && AppRequest::isDebug()){
             return parent::render($request, $e);
         }
         if ($e instanceof RouteNotFoundException) {
             return $this->toDefaultExceptionJson($e);
         }
-        if ($e instanceof huikeException) {
+        if ($e instanceof HuikeException) {
             return $this->toHuikeException($e);
         }
         if ($e instanceof Exception) {
             return $this->toThinkExceptionJson($e);
         }
         return $this->toDefaultExceptionJson($e);
-
-        // 其他错误交给系统处理
-        //return parent::render($request, $e);
     }
 
     //应用框架异常
@@ -69,7 +68,7 @@ class HuikeExceptionHandle extends Handle
     protected function toDefaultExceptionJson(\Throwable $e)
     {
         $this->responseData['success'] = false;
-        $this->responseData['showType'] = Config::get('huike.default_error_notice_type', 4);
+        $this->responseData['showType'] = ExceptionConst::NOTICE_TYPE;
         $this->responseData['errorCode'] = $e->getCode();
         $this->responseData['errorMessage'] = AppRequest::isDebug() ? $e->getMessage() : Config::get('app.error_message');
         $this->responseData['data'] = [];
@@ -83,10 +82,21 @@ class HuikeExceptionHandle extends Handle
         return $this->toDefaultExceptionJson($e);
     }
 
+    protected function toErrorExceptionJson(Exception $e)
+    {
+        $this->responseData['success'] = false;
+        $this->responseData['showType'] = NoticeType::PAGE_ERROR;
+        $this->responseData['errorCode'] = $e->getCode();
+        $this->responseData['errorMessage'] = AppRequest::isDebug() ? $e->getMessage() : Config::get('app.error_message');
+        return $this->toJson($e);
+    }
+
+
     protected function toJson(\Throwable $e)
     {
         $this->getDebugInfo();
         $this->getTraceInfo($e);
+        //return \response($this->responseData);
         return json($this->responseData);
     }
 
@@ -120,31 +130,9 @@ class HuikeExceptionHandle extends Handle
         return $this;
     }
 
-    protected function parseLogData(Throwable $e)
+    protected function parseLogData(Throwable $e): HuikeExceptionHandle
     {
-        //错误级别判断是否记录日志  是否为Error错误
-        if($e instanceof huikeException && $e->getErrorLevel() < Config::get('huike.log_error_level')){
-            return $this;
-        }
-        $logData['controller'] = AppRequest::controller();
-        $logData['action'] = AppRequest::action();
-        if($e instanceof huikeException){
-            $logData['app_error'] = $e->getError();
-            $logData['exception']['msg'] =  $e->getAppMsg();
-            $logData['exception']['code'] =  $e->getAppCode() ;
-            if($e->isLogRequest()){
-                $logData['param'] = AppRequest::param();
-                $logData['header'] = AppRequest::header();
-            }
-        }else{
-            $logData['exception']['msg'] =  $e->getMessage();
-            $logData['exception']['code'] =  $e->getCode() ;
-        }
-
-        $logData['exception']['line'] = $e->getLine();
-        $logData['exception']['file'] = $e->getFile();
-        $logData['exception']['exception'] = get_class($e);
-        Log::error($logData);
+        HuikeLog::error($e);
         return $this;
     }
 }

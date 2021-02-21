@@ -3,6 +3,7 @@
 
 namespace huikedev\huike_base\exceptions;
 
+use huike\common\exception\ExceptionConst;
 use huikedev\huike_base\facade\AppRequest;
 use huikedev\huike_base\facade\ExceptionLang;
 use think\Exception;
@@ -52,7 +53,7 @@ class HuikeException extends Exception
      * @var string
      */
     protected $exceptionLang;
-    public function __construct(string $exceptionKey,string $appMsg=null,int $appCode=0,int $noticeType=1,Throwable $previous = null,$error = null,int $errorLevel=0,array $appData=[])
+    public function __construct(string $exceptionKey,string $appMsg=null,int $appCode=0,int $noticeType=ExceptionConst::NOTICE_TYPE,Throwable $previous = null,$error = null,int $errorLevel=0,array $appData=[])
     {
         $this->parseAppMsg($exceptionKey,$appMsg,$error);
         $this->parseCode($appCode);

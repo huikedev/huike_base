@@ -95,14 +95,10 @@ class AppResponse
      */
     protected function productionRender()
     {
-        try {
             $logicClass = $this->getLogicClass();
             $action          = AppRequest::action();
             $logic           = app($logicClass)->$action();
             $returnTypeDispatch = is_null($this->dispatch) ? 'huikedev\huike_base\response\dispatch\\'.Str::studly(strtolower($logic->getReturnType())) : $this->dispatch;
-        }catch (\Throwable $e){
-            throw new ResponseException($e->getMessage(),4);
-        }
 
         return app($returnTypeDispatch,[$logic],true)->render();
     }
@@ -114,7 +110,6 @@ class AppResponse
      */
     protected function debugRender()
     {
-        $logicClass = $this->getLogicClass();
         try{
             $logicClass = $this->getLogicClass();
             $action          = AppRequest::action();

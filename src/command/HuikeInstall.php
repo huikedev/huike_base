@@ -14,6 +14,7 @@ class HuikeInstall extends BaseCommand
     {
         try {
             $this->copyFiles();
+            $this->makeEmptyDirs();
             $this->demoModuleInstall();
             $this->copyController();
             $this->overwriteConfig();
@@ -46,6 +47,8 @@ EOT
         $this->copyFile('common'.DIRECTORY_SEPARATOR.'init'.DIRECTORY_SEPARATOR.'HuikeConsole');
         // 扩展验证规则
         $this->copyFile('common'.DIRECTORY_SEPARATOR.'init'.DIRECTORY_SEPARATOR.'HuikeExtraValidate');
+        // 自动加载路由
+        $this->copyFile('common'.DIRECTORY_SEPARATOR.'init'.DIRECTORY_SEPARATOR.'HuikeLoadRoutes');
         // 分页类
         $this->copyFile('common'.DIRECTORY_SEPARATOR.'init'.DIRECTORY_SEPARATOR.'HuikePaginator');
         // Query类
@@ -56,6 +59,8 @@ EOT
         $this->copyFile('common'.DIRECTORY_SEPARATOR.'middlewares'.DIRECTORY_SEPARATOR.'HuikeModuleRouteMiddleware');
         // 异常文件
         $this->copyFile('lang'.DIRECTORY_SEPARATOR.'zh-cn'.DIRECTORY_SEPARATOR.'exception');
+        // 演示模块路由
+        $this->copyFile('routes'.DIRECTORY_SEPARATOR.'huike_module');
         mkdir($this->app->getRootPath().'huike'.DIRECTORY_SEPARATOR.'command',0755,true);
     }
 
@@ -74,6 +79,21 @@ EOT
             mkdir($dir,0755,true);
         }
         file_put_contents($file,$this->getStubContent($name));
+    }
+
+    protected function makeEmptyDirs()
+    {
+        $this->makeEmptyDir('logic'.DIRECTORY_SEPARATOR.'controller');
+        $this->makeEmptyDir('validate');
+        $this->makeEmptyDir('service');
+    }
+
+    protected function makeEmptyDir(string $name)
+    {
+        $dir = $this->app->getRootPath().'huike'.DIRECTORY_SEPARATOR.'default_module'.DIRECTORY_SEPARATOR.$name;
+        if (is_dir($dir) === false){
+            mkdir($dir,0755,true);
+        }
     }
 
 
@@ -106,7 +126,6 @@ EOT
         $this->copyFile('huike_module'.DIRECTORY_SEPARATOR.'service'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'provider'.DIRECTORY_SEPARATOR.'Validate');
         $this->copyFile('huike_module'.DIRECTORY_SEPARATOR.'service'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'IndexService');
         $this->copyFile('huike_module'.DIRECTORY_SEPARATOR.'validate'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.'Validate');
-        $this->copyFile('huike_module'.DIRECTORY_SEPARATOR.'route');
     }
 
     protected function copyController()

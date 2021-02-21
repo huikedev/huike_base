@@ -23,7 +23,7 @@ abstract class AuthAbstract implements AuthInterface
 
     abstract public function login(int $userId);
 
-    abstract public function logout(string $token);
+    abstract public function logout();
 
     public function handle()
     {

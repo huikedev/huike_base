@@ -1,0 +1,19 @@
+<?php
+
+namespace huike\common\init;
+
+use huikedev\huike_base\contract\InitAbstract;
+use huikedev\huike_base\facade\FileSystem;
+
+class HuikeLoadRoutes extends InitAbstract
+{
+    public function handle():array
+    {
+        $routePath = $this->huikePath.DIRECTORY_SEPARATOR.'routes';
+        $routes = [];
+        if(is_dir($routePath)){
+            $routes =  glob($routePath.DIRECTORY_SEPARATOR.'*.php',defined('GLOB_BRACE') ? GLOB_BRACE : 0);
+        }
+        return $routes;
+    }
+}

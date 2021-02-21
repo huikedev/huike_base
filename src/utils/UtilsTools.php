@@ -21,6 +21,11 @@ class UtilsTools
         return  preg_replace('/\/+/',$separator,$path);
     }
 
+    public static function removeRootPath(string $path,string $separator=DIRECTORY_SEPARATOR)
+    {
+        return self::replaceSeparator(str_replace(app()->getRootPath(),'',$path),$separator);
+    }
+
     /**
      * @desc 将格式不规范的命名空间整理为规范的命名空间 开头不带\
      * @param string $namespace
@@ -33,6 +38,7 @@ class UtilsTools
         $namespace = trim($namespace,'\\');
         return $namespace;
     }
+
 
     /**
      * @desc 清除字符串所有空格

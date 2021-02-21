@@ -19,15 +19,15 @@ class Auth implements AuthInterface
     }
     public function getNullableUserId()
     {
-        return app('auth')->getExceptionId();
+        return app('auth')->getNullableUserId();
     }
     public function getUserId()
     {
         return app('auth')->getUserId();
     }
-    public function login(int $uid)
+    public function login(int $userId)
     {
-        return app('auth')->login($uid);
+        return app('auth')->login($userId);
     }
     public function logout()
     {

@@ -1,4 +1,5 @@
 <?php
+use think\facade\Route;
 
 Route::group('huike',function (){
     Route::get('','huike_module.index.Index/index');

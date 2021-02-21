@@ -10,7 +10,6 @@ class HuikeModuleRouteMiddleware
 {
     public function handle($request, \Closure $next)
     {
-
         AppRequest::setModule('huike_module');
         return $next($request);
     }

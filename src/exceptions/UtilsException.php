@@ -3,6 +3,7 @@
 
 namespace huikedev\huike_base\exceptions;
 
+use huike\common\exception\ExceptionConst;
 use huikedev\huike_base\app_const\NoticeType;
 
 /**
@@ -14,7 +15,7 @@ use huikedev\huike_base\app_const\NoticeType;
 class UtilsException extends HuikeException
 {
     protected $exceptionKey = 'utils error';
-    public function __construct( string $logMsg ,int $code ,\Throwable $previous = null, int $noticeType = NoticeType::DIALOG_ERROR)
+    public function __construct( string $logMsg ,int $code ,\Throwable $previous = null, int $noticeType = ExceptionConst::NOTICE_TYPE)
     {
         parent::__construct($this->exceptionKey, null, $code, $noticeType,$previous, $logMsg);
     }

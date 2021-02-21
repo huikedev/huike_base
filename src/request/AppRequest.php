@@ -21,7 +21,7 @@ class AppRequest
      */
     protected $setId;
     protected $huikeConfig;
-    protected $module;
+    protected $module = 'default_module';
     protected $namespace = 'huike';
     public function __construct()
     {
