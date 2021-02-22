@@ -31,6 +31,7 @@ abstract class CacheAbstract
         $this->cacheData = $this->cacheHandle()->remember($this->cacheKey,function (){
             return $this->getDataSource();
         },intval($this->expire));
+        $this->update = false;
         $this->redisCount = $this->redisCount +1;
         return $this;
     }

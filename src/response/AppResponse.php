@@ -5,6 +5,7 @@ namespace huikedev\huike_base\response;
 
 
 use huikedev\huike_base\app_const\NoticeType;
+use huikedev\huike_base\app_const\response\AppResponseType;
 use huikedev\huike_base\base\BaseLogic;
 use huikedev\huike_base\base\BaseValidate;
 use huikedev\huike_base\exceptions\AppValidateException;
@@ -23,6 +24,7 @@ class AppResponse
     protected $logicNamespacePrefix;
     protected $validateNamespacePrefix;
     protected $dispatch;
+    public static $responseType = AppResponseType::DEFAULT;
     public function setLogicNamespacePrefix(?string $logicNamespacePrefix): AppResponse
     {
         if(empty($logicNamespacePrefix)===false){
@@ -98,6 +100,7 @@ class AppResponse
             $logicClass = $this->getLogicClass();
             $action          = AppRequest::action();
             $logic           = app($logicClass)->$action();
+            self::$responseType = $logic->getReturnType();
             $returnTypeDispatch = is_null($this->dispatch) ? 'huikedev\huike_base\response\dispatch\\'.Str::studly(strtolower($logic->getReturnType())) : $this->dispatch;
 
         return app($returnTypeDispatch,[$logic],true)->render();
@@ -127,7 +130,7 @@ class AppResponse
         if(Config::get('huike.base_logic_check',true) &&$logic instanceof BaseLogic === false){
             throw new ResponseException($logicClass . '必须返回'.BaseLogic::class.'实例',3);
         }
-
+        self::$responseType = $logic->getReturnType();
         $returnTypeDispatch = is_null($this->dispatch) ? 'huikedev\huike_base\response\dispatch\\'.Str::studly(strtolower($logic->getReturnType())) : $this->dispatch;
         return app($returnTypeDispatch,[$logic],true)->render();
     }

@@ -26,7 +26,7 @@ class ServiceReturnType
     ];
 
     const ALL_TEXT = [
-        'mixed'=>'泛型（mixed）',
+        'mixed'=>'任意（mixed）',
         'bool'=>'布尔（bool）',
         'int'=>'整型（int）',
         'float'=>'浮点（mixed）',

@@ -13,7 +13,7 @@ use think\facade\Config;
  */
 class UtilsRequest
 {
-    public static function setHeader()
+    public static function setHeaders()
     {
         //跨域
         $originHeaders   = [   //原始header
@@ -34,9 +34,8 @@ class UtilsRequest
             $allowOrigins    =  Config::get('huike.cors.optionOrigin');
             $allowOriginString = implode(',',$allowOrigins);
         }
-
-        header('Access-Control-Allow-Origin: '.$allowOriginString);
-        header('Access-Control-Allow-Methods:' . $allowMethodString);
-        header('Access-Control-Allow-Headers:' . $allowHeaderString);
+        header('Access-Control-Allow-Origin:'.$allowOriginString);
+        header('Access-Control-Allow-Methods:'.$allowMethodString);
+        header('Access-Control-Allow-Headers:'.$allowHeaderString);
     }
 }

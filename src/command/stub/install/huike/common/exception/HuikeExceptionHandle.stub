@@ -4,8 +4,8 @@
 namespace huike\common\exception;
 
 use huikedev\huike_base\app_const\NoticeType;
+use huikedev\huike_base\debug\AppTrace;
 use huikedev\huike_base\exceptions\HuikeException;
-use huikedev\huike_base\facade\AppDebug;
 use huikedev\huike_base\facade\AppRequest;
 use huikedev\huike_base\log\HuikeLog;
 use think\Exception;
@@ -34,6 +34,9 @@ class HuikeExceptionHandle extends Handle
 
     public function render($request, \Throwable $e): Response
     {
+        if ($e instanceof HttpResponseException) {
+            return $e->getResponse();
+        }
         if($e instanceof ErrorException){
             return $this->toErrorExceptionJson($e);
         }
@@ -94,33 +97,19 @@ class HuikeExceptionHandle extends Handle
 
     protected function toJson(\Throwable $e)
     {
-        $this->getDebugInfo();
         $this->getTraceInfo($e);
-        //return \response($this->responseData);
+        $this->getDebugInfo();
         return json($this->responseData);
     }
 
-    /*
-     * php 8.0可以使用union types合并Exception和Response
-     */
     protected function getDebugInfo()
     {
-        if (AppRequest::isDebug() === false) {
-            return $this;
+        if (AppRequest::isDebug()) {
+            AppTrace::traceDebug($this->responseData);
         }
-        AppDebug::remark('huike_end');
-        $this->responseData['debug']['time_cost'] = AppDebug::getRangeTime('huike_start', 'huike_end');
-        $this->responseData['debug']['mem_cost'] = AppDebug::getRangeMem('huike_start', 'huike_end');
-        $this->responseData['debug']['file_load'] = AppDebug::getFile();
-        $this->responseData['debug']['req'] = AppDebug::getThroughputRate();
-        $this->responseData['debug']['queries'] = app()->db->getQueryTimes();
-        $this->responseData['debug']['cache_reads'] = app('cache')->getReadTimes();
-        $this->responseData['debug']['cache_writes'] = app('cache')->getWriteTimes();
-        $this->responseData['debug']['time_stamp'] = date('Y-m-d H:i:s', time());
-        return $this;
     }
 
-    protected function getTraceInfo(\Throwable $e)
+    protected function getTraceInfo(\Throwable $e): HuikeExceptionHandle
     {
         if (AppRequest::isDebug() === false) {
             return $this;
@@ -132,7 +121,9 @@ class HuikeExceptionHandle extends Handle
 
     protected function parseLogData(Throwable $e): HuikeExceptionHandle
     {
-        HuikeLog::error($e);
+        if(!$this->isIgnoreReport($e)){
+            HuikeLog::error($e);
+        }
         return $this;
     }
 }

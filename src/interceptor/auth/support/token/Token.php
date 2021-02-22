@@ -29,6 +29,7 @@ class Token
         }
         $this->client = $client;
         $this->timestamp    =   time();
+        $this->cachePrefix = $this->config['token_prefix'] ?? 'token_';
     }
 
     public function setClient(string $client): Token
@@ -64,7 +65,7 @@ class Token
      */
     public function destroy(int $uid):bool
     {
-        return Cache::store('redis')->delete($this->getPrefix().$uid);
+        return Cache::store(Cache::getDefaultDriver())->delete($this->getPrefix().$uid);
     }
 
     /**

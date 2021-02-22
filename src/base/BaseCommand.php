@@ -32,6 +32,7 @@ abstract class BaseCommand extends Command
     protected function configure()
     {
         $this->setName(class_basename(get_called_class()));
+        $this->setDescription($this->description);
         parent::configure();
     }
 

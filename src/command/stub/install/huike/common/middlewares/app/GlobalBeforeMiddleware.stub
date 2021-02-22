@@ -3,7 +3,6 @@
 
 namespace huike\common\middlewares\app;
 
-use huikedev\huike_base\facade\AppDebug;
 use huikedev\huike_base\facade\AppRequest;
 use huikedev\huike_base\utils\UtilsRequest;
 
@@ -17,14 +16,10 @@ class GlobalBeforeMiddleware
 {
     public function handle($request, \Closure $next)
     {
-
-        UtilsRequest::setHeader();
+        UtilsRequest::setHeaders();
         //跨域option直接空返回
         if (strtolower(AppRequest::method()) == "options") {
             return \response('');
-        }
-        if(AppRequest::isDebug()){
-            AppDebug::remark('huike_start');
         }
 
         return $next($request);
