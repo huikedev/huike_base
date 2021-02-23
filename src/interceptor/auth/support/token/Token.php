@@ -99,13 +99,16 @@ class Token
 
     /**
      * @desc 验证Token
-     * @param string $jwt
+     * @param $jwt
      * @return array
      * @throws JwtException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function verifyToken(string $jwt):array
+    public function verifyToken($jwt):array
     {
+        if(is_string($jwt) === false){
+            throw new JwtException('登陆验证错误，请重新登录',5,ExceptionConst::NOTICE_TYPE);
+        }
         try{
             $key    =  $this->getSecretKey();
             $payload    =   JWT::decode($jwt,$key,[$this->config['token_alg']]);
