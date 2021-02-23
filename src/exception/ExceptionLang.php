@@ -30,6 +30,7 @@ class ExceptionLang
         'utils error'                 => ['code' => -9200, 'msg' => '系统错误，请稍候再试'],
         'route loaded error'       => ['code' => -9300, 'msg' => '路由加载失败'],
         'auth field'                  => ['code' => -99900, 'msg' => '登录验证错误，请重新登录'],
+        'permission field'=> ['code' => -9400, 'msg' => '登录验证错误，请重新登录'],
     ];
     public function setExceptionLangFile($exceptionLangFile): ExceptionLang
     {

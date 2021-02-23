@@ -135,11 +135,17 @@ class AppResponse
         return app($returnTypeDispatch,[$logic],true)->render();
     }
 
-    protected function getControllerInfo(): string
+    protected function getControllerInfo(): array
     {
         $appController = AppRequest::controller();
         $appController = str_replace('.','\\',$appController);
-        return str_replace(AppRequest::module(),'',$appController);
+        $appController = str_replace(AppRequest::module(),'',$appController);
+        $array = explode('\\',$appController);
+        $controller = array_pop($array);
+        return [
+            'prefix'=>count($array) > 0? implode('\\',$array) : null,
+            'controller'=>$controller
+        ];
     }
 
     protected function getLogicClass():string
@@ -153,7 +159,12 @@ class AppResponse
             }
             $class .= '\logic\\'.$this->defaultControllerPath.'\\';
         }
-        $class .= $this->getControllerInfo();
+        $controllerInfo = $this->getControllerInfo();
+        if(is_null($controllerInfo['prefix'])){
+            $class .=$controllerInfo['controller'];
+        }else{
+            $class .=$controllerInfo['prefix'].'\\'.$controllerInfo['controller'];
+        }
         return UtilsTools::replaceNamespace($class);
     }
 
@@ -168,9 +179,12 @@ class AppResponse
             }
             $class .= '\\'.$this->defaultValidatePath;
         }
-
-        $namespaceInfo = pathinfo($this->getControllerInfo());
-        $class .='\\'.$namespaceInfo['dirname'].'\\'.Str::snake($namespaceInfo['filename']).'\\'.Str::studly(AppRequest::action());
+        $controllerInfo = $this->getControllerInfo();
+        if(is_null($controllerInfo['prefix'])){
+            $class .='\\'.Str::snake($controllerInfo['controller']).'\\'.Str::studly(AppRequest::action());
+        }else{
+            $class .='\\'.$controllerInfo['prefix'].'\\'.Str::snake($controllerInfo['controller']).'\\'.Str::studly(AppRequest::action());
+        }
         return UtilsTools::replaceNamespace($class);
     }
 

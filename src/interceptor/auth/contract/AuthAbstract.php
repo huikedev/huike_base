@@ -25,6 +25,7 @@ abstract class AuthAbstract implements AuthInterface
 
     abstract public function logout();
 
+
     public function handle()
     {
         if($this->isAuthNecessary()){

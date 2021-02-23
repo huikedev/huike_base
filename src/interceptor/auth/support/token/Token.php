@@ -5,6 +5,7 @@ namespace huikedev\huike_base\interceptor\auth\support\token;
 
 
 use Firebase\JWT\JWT;
+use huike\common\exception\ExceptionConst;
 use huikedev\huike_base\app_const\AppSpecialValue;
 use huikedev\huike_base\interceptor\auth\support\token\exception\JwtConfigFileNotFound;
 use huikedev\huike_base\interceptor\auth\support\token\exception\JwtException;
@@ -116,7 +117,7 @@ class Token
                 throw new JwtException('登陆状态错误，请重新登录',2);
             }
         }catch (\Exception $e){
-            throw new JwtException('登陆验证错误，请重新登录',3);
+            throw new JwtException('登陆验证错误，请重新登录',3,ExceptionConst::NOTICE_TYPE,$e);
         }
         $needVerifyToken = md5($jwt);
         if(in_array($needVerifyToken,$tokenCached)===false){

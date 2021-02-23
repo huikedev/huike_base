@@ -56,6 +56,14 @@ class UtilsTools
         return current(array_reverse(explode('\\',$class)));
     }
 
+    public static function getNamespacePrefix(string $class):string
+    {
+        $class = self::replaceNamespace($class);
+        $array = explode('\\',$class);
+        array_pop($array);
+        return implode('\\',$array);
+    }
+
     /**
      * @desc 获取单个类文件内的方法及访问修饰符
      * @param string $file
