@@ -13,6 +13,7 @@ abstract class InstallAbstract extends BaseCommand
 {
     protected $rootPath;
     protected $migrateStatus = true;
+    protected $seedsStatus = false;
     protected $sqlFile;
     public function __construct()
     {
@@ -87,6 +88,7 @@ abstract class InstallAbstract extends BaseCommand
                 return true;
             }
             $this->output->info("数据迁移成功！");
+            $this->seedsStatus = true;
             return true;
         }
         return true;
